@@ -93,7 +93,10 @@ function requestVerseRanges(book, chapter, token) {
     appMessageQueues[token.toString()] = [];
     for (var i = 0; i < batches; i++)
     {
-     var batchName = ((i * options.appMessage.verseBatch) + 1).toString() + "-" + (Math.min((i + 1) * options.appMessage.verseBatch, response.length)).toString();
+      var batchStart = ((i * options.appMessage.verseBatch) + 1);
+      var batchEnd = (Math.min((i + 1) * options.appMessage.verseBatch, response.length));
+      var batchName = batchStart == batchEnd ? batchStart.toString() : 
+      batchStart.toString() + "-" + batchEnd.toString();
       appMessageQueues[token.toString()].push({'message': {
         'token': token,
         'list': List.Verses,
@@ -111,7 +114,8 @@ function requestVerseText(book, chapter, rangeString, token) {
     var verseText = "";
     for (var i in response)
     {
-      if (parseInt(response[i].verse) >= parseInt(range[0]) && parseInt(response[i].verse) <= parseInt(range[1]))
+      if (range.length == 1 && parseInt(response[i].verse) == parseInt(range[0])
+        || parseInt(response[i].verse) >= parseInt(range[0]) && parseInt(response[i].verse) <= parseInt(range[1]))
       {
         verseText += response[i].verse + ") " + response[i].text + " ";
       }
